@@ -5,6 +5,30 @@ info:
   version: '1'
 paths: {}
 components:
+  schemas:
+    SingleSchema:
+      "$ref": singleschema.openapi.yml
   responses:
-    SomeResponse:
+    SingleResponse:
       "$ref": singleresponse.openapi.yml
+  parameters:
+    SingleParameter:
+      "$ref": singleparameter.openapi.yml
+  examples:
+    SingleExample:
+      "$ref": singleexample.openapi.yml
+  requestBodies:
+    SingleReqBody:
+      "$ref": singlereqbody.openapi.yml
+  headers:
+    SingleHeader:
+      "$ref": singleheader.openapi.yml
+  securitySchemes:
+    SingleSecurityScheme:
+      "$ref": singlesecurityscheme.openapi.yml
+  links:
+    SingleLink:
+      "$ref": singlelink.openapi.yml
+  callbacks:
+    SingleCallback:
+      "$ref": singlecallback.openapi.yml

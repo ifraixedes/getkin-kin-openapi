@@ -6,10 +6,50 @@
     },
     "paths": {},
     "components": {
+        "schemas": {
+          "SingleSchema": {
+            "$ref": "singleschema.openapi.json"
+          }
+        },
         "responses": {
-            "SomeResponse": {
+            "SingleResponse": {
                 "$ref": "singleresponse.openapi.json"
             }
+        },
+        "parameters":{
+          "SingleParameter": {
+            "$ref": "singleparameter.openapi.json"
+          }
+        },
+        "examples":{
+          "SingleExample": {
+            "$ref": "singleexample.openapi.json"
+          }
+        },
+        "requestBodies": {
+          "SingleReqBody": {
+            "$ref": "singlereqbody.openapi.json"
+          }
+        },
+        "headers": {
+          "SingleHeader": {
+            "$ref": "singleheader.openapi.json"
+          }
+        },
+        "securitySchemes": {
+          "SingleSecurityScheme": {
+            "$ref": "singlesecurityscheme.openapi.json"
+          }
+        },
+        "links": {
+          "SingleLink": {
+            "$ref": "singlelink.openapi.json"
+          }
+        },
+        "callbacks": {
+          "SingleCallback": {
+            "$ref": "singlecallback.openapi.json"
+          }
         }
     }
 }

@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -328,11 +329,10 @@ func TestLoadFileWithExternalSchemaRef(t *testing.T) {
 func TestLoadFileWithExternalSingleComponentsRef(t *testing.T) {
 	loader := openapi3.NewSwaggerLoader()
 	loader.IsExternalRefsAllowed = true
-	swagger, err := loader.LoadSwaggerFromFile("testdata/testrefsinglecomponent.openapi.json")
+	swagger, err := loader.LoadSwaggerFromFile("testdata/testrefsinglecomponents.openapi.json")
 	require.NoError(t, err)
 
-	require.NotNil(t, swagger.Components.Responses["SomeResponse"])
-	require.Equal(t, "this is a single response definition", swagger.Components.Responses["SomeResponse"].Value.Description)
+	testChecksForSingleComponentsRef(t, swagger)
 }
 
 func TestLoadRequestResponseHeaderRef(t *testing.T) {
@@ -437,9 +437,77 @@ func TestLoadYamlFileWithExternalSchemaRef(t *testing.T) {
 func TestLoadYamlFileWithExternalSingleComponentsRef(t *testing.T) {
 	loader := openapi3.NewSwaggerLoader()
 	loader.IsExternalRefsAllowed = true
-	swagger, err := loader.LoadSwaggerFromFile("testdata/testrefsinglecomponent.openapi.yml")
+	swagger, err := loader.LoadSwaggerFromFile("testdata/testrefsinglecomponents.openapi.yml")
 	require.NoError(t, err)
 
-	require.NotNil(t, swagger.Components.Responses["SomeResponse"])
-	require.Equal(t, "this is a single response definition", swagger.Components.Responses["SomeResponse"].Value.Description)
+	testChecksForSingleComponentsRef(t, swagger)
+}
+
+func testChecksForSingleComponentsRef(t *testing.T, swagger *openapi3.Swagger) {
+	require.NotNil(t, swagger, "swagger param cannot be nil")
+
+	// Schemas references
+	if assert.NotNil(t, swagger.Components.Responses["SingleSchema"]) &&
+		assert.NotNil(t, swagger.Components.Responses["SingleSchema"].Value) {
+		assert.Equal(t, "integer", swagger.Components.Schemas["SingleSchema"].Value.Type)
+		assert.Equal(t, "int64", swagger.Components.Schemas["SingleSchema"].Value.Format)
+	}
+
+	// Responses references
+	if assert.NotNil(t, swagger.Components.Responses["SingleResponse"]) &&
+		assert.NotNil(t, swagger.Components.Responses["SingleResponse"].Value) {
+		assert.Equal(t, "this is a single response definition", swagger.Components.Responses["SingleResponse"].Value.Description)
+	}
+
+	// Parameters references
+	if assert.NotNil(t, swagger.Components.Responses["SingleParameter"]) &&
+		assert.NotNil(t, swagger.Components.Responses["SingleParameter"].Value) {
+		assert.Equal(t, "a-parameter", swagger.Components.Parameters["SingleParameter"].Value.Name)
+		assert.Equal(t, "query", swagger.Components.Parameters["SingleParameter"].Value.In)
+		if assert.NotNil(t, swagger.Components.Parameters["SingleParameter"].Value.Schema) &&
+			assert.NotNil(t, swagger.Components.Parameters["SingleParameter"].Value.Schema.Value) {
+			assert.Equal(t, "string", swagger.Components.Parameters["SingleParameter"].Value.Schema.Value.Type)
+		}
+	}
+
+	// Examples references
+	if assert.NotNil(t, swagger.Components.Responses["SingleExample"]) &&
+		assert.NotNil(t, swagger.Components.Responses["SingleExample"].Value) {
+		assert.Equal(t, "just a single example", swagger.Components.Examples["SingleExample"].Value.Summary)
+	}
+
+	// Request bodies references
+	if assert.NotNil(t, swagger.Components.RequestBodies["SingleReqBody"]) &&
+		assert.NotNil(t, swagger.Components.RequestBodies["SingleReqBody"].Value) {
+		if assert.NotNil(t, swagger.Components.RequestBodies["SingleReqBody"].Value.Content) &&
+			assert.Contains(t, swagger.Components.RequestBodies["SingleReqBody"].Value.Content, "text/plain") &&
+			assert.NotNil(t, swagger.Components.RequestBodies["SingleReqBody"].Value.Content["text/plain"].Schema) &&
+			assert.NotNil(t, swagger.Components.RequestBodies["SingleReqBody"].Value.Content["text/plain"].Schema.Value) {
+			assert.Equal(t, "string", swagger.Components.RequestBodies["SingleReqBody"].Value.Content["text/plain"].Schema.Value.Type)
+		}
+	}
+
+	// Headers references
+	if assert.NotNil(t, swagger.Components.Headers["SingleHeader"]) &&
+		assert.NotNil(t, swagger.Components.Headers["SingleHeader"].Value) {
+		assert.Equal(t, "some Content-Type header", swagger.Components.Headers["SingleHeader"].Value.Description)
+		if assert.NotNil(t, swagger.Components.Headers["SingleHeader"].Value.Schema) &&
+			assert.NotNil(t, swagger.Components.Headers["SingleHeader"].Value.Schema.Value) {
+			assert.Equal(t, "string", swagger.Components.Headers["SingleHeader"].Value.Schema.Value.Type)
+		}
+	}
+
+	if assert.NotNil(t, swagger.Components.SecuritySchemes["SingleSecurityScheme"]) &&
+		assert.NotNil(t, swagger.Components.SecuritySchemes["SingleSecurityScheme"].Value) {
+		assert.Equal(t, "apiKey", swagger.Components.SecuritySchemes["SingleSecurityScheme"].Value.Type)
+		assert.Equal(t, "api_key", swagger.Components.SecuritySchemes["SingleSecurityScheme"].Value.Name)
+		assert.Equal(t, "header", swagger.Components.SecuritySchemes["SingleSecurityScheme"].Value.In)
+	}
+
+	if assert.NotNil(t, swagger.Components.Links["SingleLink"]) &&
+		assert.NotNil(t, swagger.Components.Links["SingleLink"].Value) {
+		assert.Equal(t, "some link", swagger.Components.Links["SingleLink"].Value.Description)
+	}
+
+	// TODO: COTINUE adding the last one, Callbacks
 }

@@ -1,0 +1,8 @@
+{
+  "Content-Type": {
+    "description": "some Content-Type header",
+    "schema": {
+      "type": "string"
+    }
+  }
+}

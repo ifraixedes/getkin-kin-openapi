@@ -1,0 +1,7 @@
+{
+  "name": "a-parameter",
+  "in": "query",
+  "schema": {
+    "type": "string"
+  }
+}
